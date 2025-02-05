@@ -10,8 +10,8 @@ from .script.licensePlateCapture import base64licenseplateCrop
 class GetLicensePlate(APIView):
     def post(self, request):
         res = {
-                "plateNo":None,
-                "brand":None
+                "plateNo":None
+                # ,"brand":None
             }
         try:
             data = request.data
@@ -20,9 +20,6 @@ class GetLicensePlate(APIView):
                     data={"status": "error", "code": 400, "message": "Missing required fields"},
                     status=status.HTTP_400_BAD_REQUEST
                 )
-
-            # print("data image : " , data["image"][:100] , "...")
-            
             base64_input_images = [
             data["image"]
             ]

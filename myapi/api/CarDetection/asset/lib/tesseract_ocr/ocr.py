@@ -40,8 +40,8 @@ def extractNumbersFromBase64(base64_string):
         return f"เกิดข้อผิดพลาด: {str(e)}"
 
 # ตัวอย่าง Base64 (ใส่ค่าจริงของ Base64 แทน)
-base64_image = "ใส่ค่ารูปภาพ Base64 ที่นี่"
+# base64_image = "ใส่ค่ารูปภาพ Base64 ที่นี่"
 
-# อ่านตัวเลขจากภาพ
-numbers_detected = extractNumbersFromBase64(base64_image)
-print(numbers_detected)
+# # อ่านตัวเลขจากภาพ
+# numbers_detected = extractNumbersFromBase64(base64_image)
+# print(numbers_detected)
