@@ -44,13 +44,20 @@ class LoadImageSet(APIView):
 
 class GetBlurImage(APIView):
     def post(self, request):
-        res = {
-                "blurImage":None
-            }
+        res = ""
         try:
-
+            data = request.data
+            if "image" not in data or "type" not in data:
+                return Response(
+                    data={"status": "error", "code": 400, "message": "Missing required fields"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            base64_input_images = [
+            data["image"]
+            ]
+            detechedObject = detectImageRun(weights="model.pt", base64_images=base64_input_images)
             return Response(
-                data={"detail":res,
+                data={"image":res,
                       "status": "Success", "code": 200, "message": "Success"},
                 status=status.HTTP_200_OK
             )

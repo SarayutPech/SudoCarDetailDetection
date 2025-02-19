@@ -6,4 +6,5 @@ urlpatterns = [
     path('getLicensePlate/', GetLicensePlate.as_view()),
     path('loadImage/', LoadImageSet.as_view()),
     path('resizeImage/', resizeImageSet.as_view()),
+    path('getBlurImage/', GetBlurImage.as_view()),
 ]
