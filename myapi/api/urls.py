@@ -4,4 +4,5 @@ from .views import *
 
 urlpatterns = [
     path('getLicensePlate/', GetLicensePlate.as_view()),
+    path('loadImage/', LoadImageSet.as_view()),
 ]

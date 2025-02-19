@@ -5,7 +5,59 @@ from .CarDetection.asset.lib.yolov5.detectSingleImageWindow import run
 from .CarDetection.asset.lib.tesseract_ocr.ocr import extractNumbersFromBase64
 from .CarDetection.Useful_Script.ImageProcessing import *
 from .script.licensePlateCapture import base64licenseplateCrop
+from .CarDetection.Useful_Script.Load_Image_To_Dir import runScript as LoadImageToDirRunScript
 
+
+class LoadImageSet(APIView):
+    def post(self, request):
+        try:
+            LoadImageToDirRunScript("./dataForTrain/rawImage","./dataForTrain/fullImage")
+            return Response(
+                data={
+                      "status": "Success", "code": 200, "message": "Success"},
+                status=status.HTTP_200_OK
+            )
+        except Exception as e:
+            return Response(
+                data={
+                      "status": "Internal Server Error", "code": 500, "message": "Internal Server Error"},
+                status=500
+            )
+
+class resizeImageSet(APIView):
+    def post(self, request):
+        try:
+            runScript("./dataForTrain/rawImage","./dataForTrain/fullImage")
+            return Response(
+                data={
+                      "status": "Success", "code": 200, "message": "Success"},
+                status=status.HTTP_200_OK
+            )
+        except Exception as e:
+            return Response(
+                data={
+                      "status": "Internal Server Error", "code": 500, "message": "Internal Server Error"},
+                status=500
+            )
+
+class GetBlurImage(APIView):
+    def post(self, request):
+        res = {
+                "blurImage":None
+            }
+        try:
+
+            return Response(
+                data={"detail":res,
+                      "status": "Success", "code": 200, "message": "Success"},
+                status=status.HTTP_200_OK
+            )
+        except Exception as e:
+            return Response(
+                data={"detail":res,
+                      "status": "Internal Server Error", "code": 500, "message": "Internal Server Error"},
+                status=500
+            )
     
 class GetLicensePlate(APIView):
     def post(self, request):
@@ -24,22 +76,18 @@ class GetLicensePlate(APIView):
             data["image"]
             ]
             detechedObject = run(weights="model.pt", base64_images=base64_input_images)
-            # detechedObject["results"][0]["TruckPlate"] = base64licenseplateCrop(detechedObject["results"][0]["TruckPlate"])
-            # detechedObject["results"][0]["TruckPlate"] = sharpen_image(detechedObject["results"][0]["TruckPlate"])
             number = extractNumbersFromBase64(detechedObject["results"][0]["TruckPlate"])
             print(number)
             res["plateNo"] = number[0] + "-" + number[1]
 
             return Response(
                 data={"detail":res,
-                    #   "data": detechedObject,
                       "status": "Success", "code": 200, "message": "Success"},
                 status=status.HTTP_200_OK
             )
         except Exception as e:
             return Response(
                 data={"detail":res,
-                    #   "data": detechedObject,
                       "status": "Internal Server Error", "code": 500, "message": "Internal Server Error"},
                 status=500
             )
