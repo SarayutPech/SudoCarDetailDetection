@@ -1,17 +1,19 @@
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
-from .CarDetection.asset.lib.yolov5.detectSingleImageWindow import run
+from .CarDetection.asset.lib.yolov5.detectSingleImageWindow import run as detectImageRun
 from .CarDetection.asset.lib.tesseract_ocr.ocr import extractNumbersFromBase64
 from .CarDetection.Useful_Script.ImageProcessing import *
 from .script.licensePlateCapture import base64licenseplateCrop
 from .CarDetection.Useful_Script.Load_Image_To_Dir import runScript as LoadImageToDirRunScript
+from .CarDetection.Useful_Script.Resize_Image_To_Dir import runScript as ResizeImageToDirRunScript
 
-
-class LoadImageSet(APIView):
+class resizeImageSet(APIView):
     def post(self, request):
         try:
-            LoadImageToDirRunScript("./dataForTrain/rawImage","./dataForTrain/fullImage")
+            data = request.data
+            folderName = data["folderName"]
+            ResizeImageToDirRunScript("./dataForTrain/fullImage/" + folderName,"./dataForTrain/resizeImage/" + folderName)
             return Response(
                 data={
                       "status": "Success", "code": 200, "message": "Success"},
@@ -24,10 +26,10 @@ class LoadImageSet(APIView):
                 status=500
             )
 
-class resizeImageSet(APIView):
+class LoadImageSet(APIView):
     def post(self, request):
         try:
-            runScript("./dataForTrain/rawImage","./dataForTrain/fullImage")
+            LoadImageToDirRunScript("./dataForTrain/rawImage","./dataForTrain/fullImage")
             return Response(
                 data={
                       "status": "Success", "code": 200, "message": "Success"},
@@ -75,7 +77,7 @@ class GetLicensePlate(APIView):
             base64_input_images = [
             data["image"]
             ]
-            detechedObject = run(weights="model.pt", base64_images=base64_input_images)
+            detechedObject = detectImageRun(weights="model.pt", base64_images=base64_input_images)
             number = extractNumbersFromBase64(detechedObject["results"][0]["TruckPlate"])
             print(number)
             res["plateNo"] = number[0] + "-" + number[1]
