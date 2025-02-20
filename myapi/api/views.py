@@ -86,7 +86,7 @@ class GetLicensePlate(APIView):
             data["image"]
             ]
             detechedObject = detectImageRun(weights="model.pt", base64_images=base64_input_images)
-            print("detechedObject : ",detechedObject)
+            print("detechedObject : ",detechedObject["results"][0]["TruckPlate"])
             number = extractNumbersFromBase64(detechedObject["results"][0]["TruckPlate"])
             print("number : ",number)
 
