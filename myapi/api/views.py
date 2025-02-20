@@ -1,7 +1,8 @@
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
-from .CarDetection.asset.lib.yolov5.detectSingleImageWindow import run as detectImageRun
+from .CarDetection.asset.lib.yolov5.detectSingleImageWindow import detectCarPart as detectImageRun
+from .CarDetection.asset.lib.yolov5.detectSingleImageWindow import blurImage
 from .CarDetection.asset.lib.tesseract_ocr.ocr import extractNumbersFromBase64
 from .CarDetection.Useful_Script.ImageProcessing import *
 from .script.licensePlateCapture import base64licenseplateCrop
@@ -55,9 +56,9 @@ class GetBlurImage(APIView):
             base64_input_images = [
             data["image"]
             ]
-            detechedObject = detectImageRun(weights="model.pt", base64_images=base64_input_images)
+            res = blurImage(weights="model.pt", base64_images=base64_input_images,blur_type=data["type"])
             return Response(
-                data={"image":res,
+                data={"image":res["blurred_image"],
                       "status": "Success", "code": 200, "message": "Success"},
                 status=status.HTTP_200_OK
             )
@@ -85,9 +86,22 @@ class GetLicensePlate(APIView):
             data["image"]
             ]
             detechedObject = detectImageRun(weights="model.pt", base64_images=base64_input_images)
+            print("detechedObject : ",detechedObject)
             number = extractNumbersFromBase64(detechedObject["results"][0]["TruckPlate"])
-            print(number)
-            res["plateNo"] = number[0] + "-" + number[1]
+            print("number : ",number)
+
+            try:
+                res["plateNo"] = number[0]
+            except Exception as e:
+                print("Exception : " ,e)
+
+            indexPlateNum = 1
+            for i in range(len(number)):
+                try:
+                    res["plateNo"] += "-" + number[indexPlateNum]
+                except Exception as e:
+                    print("Exception : " ,e)
+                indexPlateNum += 1
 
             return Response(
                 data={"detail":res,
@@ -97,6 +111,6 @@ class GetLicensePlate(APIView):
         except Exception as e:
             return Response(
                 data={"detail":res,
-                      "status": "Internal Server Error", "code": 500, "message": "Internal Server Error"},
+                      "status": "Internal Server Error", "code": 500, "message": +e},
                 status=500
             )
